@@ -86,7 +86,7 @@ git clone -q https://github.com/fantaosha/LLDB-Eigen-Pretty-Printer.git $INSTALL
 # Add to lldbinit
 #
 trap - Err
-$(cat ~/.lldbinit 2>/dev/null | grep "LLDB-Eigen-Data-Formatter.py")
+$(cat ~/.lldbinit 2>/dev/null | grep "LLDB-Eigen-Pretty-Printer.py")
 ALREADY_INSTALLED=$?
 trap error_handler Err
 notice "Adding pretty printer to ~/.lldbinit"
