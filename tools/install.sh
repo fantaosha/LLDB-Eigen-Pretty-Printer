@@ -89,9 +89,9 @@ trap - Err
 $(cat ~/.lldbinit 2>/dev/null | grep "LLDB-Eigen-Data-Formatter.py")
 ALREADY_INSTALLED=$?
 trap error_handler Err
-notice "Adding data formatter to ~/.lldbinit"
+notice "Adding pretty printer to ~/.lldbinit"
 if [ ! $ALREADY_INSTALLED -eq 0 ]; then
-	echo 'command script import "'$INSTALL_PATH'/LLDB_Eigen_Data_Formatter.py"' >> ~/.lldbinit
+	echo 'command script import "'$INSTALL_PATH'/LLDB_Eigen_Pretty_Printer.py"' >> ~/.lldbinit
 else
 	notice "Skipping"
 fi
