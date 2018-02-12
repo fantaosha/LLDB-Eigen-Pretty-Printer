@@ -4,14 +4,20 @@ import os
 from functools import partial
 
 def __lldb_init_module (debugger, dict):
-    debugger.HandleCommand("type summary add -x \"^Eigen::Matrix<.*?>$\" -F \
-                           LLDB_Eigen_Pretty_Printer.eigen_matrix_print -p")
-    debugger.HandleCommand("type summary add -x \"^Eigen::Array<.*?>$\" -F \
-                           LLDB_Eigen_Pretty_Printer.eigen_array_print -p")
+    debugger.HandleCommand("type category enable Eigen")
+    debugger.HandleCommand("type summary add -x \"^Eigen::Matrix<.*?>$\" -F\
+                           LLDB_Eigen_Pretty_Printer.eigen_matrix_print -p -r\
+                          -w Eigen")
+    debugger.HandleCommand("type summary add -x \"^Eigen::Array<.*?>$\" -F\
+                           LLDB_Eigen_Pretty_Printer.eigen_array_print -p -r\
+                          -w Eigen")
     debugger.HandleCommand("type summary add -x \"^Eigen::Quaternion<.*?>$\" \
-                           -F LLDB_Eigen_Pretty_Printer.eigen_quaternion_print -p")
-    debugger.HandleCommand("type summary add -x \"^Eigen::SparseMatrix<.*?>$\" \
-                           -F LLDB_Eigen_Pretty_Printer.eigen_sparsematrix_print -p")
+                           -F LLDB_Eigen_Pretty_Printer.eigen_quaternion_print\
+                           -p -r -w Eigen")
+    debugger.HandleCommand("type summary add -x \"^Eigen::SparseMatrix<.*?>$\"\
+                           -F\
+                           LLDB_Eigen_Pretty_Printer.eigen_sparsematrix_print\
+                           -p -r -w Eigen")
 
 def evaluate_expression(valobj, expr):
     return valobj.GetProcess().GetSelectedThread().GetSelectedFrame().EvaluateExpression(expr)
