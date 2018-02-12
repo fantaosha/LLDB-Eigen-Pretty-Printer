@@ -5,13 +5,16 @@ from functools import partial
 
 def __lldb_init_module (debugger, dict):
     debugger.HandleCommand("type summary add -x \"^Eigen::Matrix<.*?>$\" -F \
-                           LLDB_Eigen_Pretty_Printer.eigen_matrix_print -p")
+                           LLDB_Eigen_Pretty_Printer.eigen_matrix_print -p -r")
     debugger.HandleCommand("type summary add -x \"^Eigen::Array<.*?>$\" -F \
-                           LLDB_Eigen_Pretty_Printer.eigen_array_print -p")
+                           LLDB_Eigen_Pretty_Printer.eigen_array_print -p -r")
     debugger.HandleCommand("type summary add -x \"^Eigen::Quaternion<.*?>$\" \
-                           -F LLDB_Eigen_Pretty_Printer.eigen_quaternion_print -p")
+                           -F LLDB_Eigen_Pretty_Printer.eigen_quaternion_print\
+                           -p -r")
     debugger.HandleCommand("type summary add -x \"^Eigen::SparseMatrix<.*?>$\" \
-                           -F LLDB_Eigen_Pretty_Printer.eigen_sparsematrix_print -p")
+                           -F \
+                           LLDB_Eigen_Pretty_Printer.eigen_sparsematrix_print \
+                           -p -r")
 
 def evaluate_expression(valobj, expr):
     return valobj.GetProcess().GetSelectedThread().GetSelectedFrame().EvaluateExpression(expr)
@@ -307,6 +310,11 @@ class Quaternion(Printer):
 
 
 def eigen_matrix_print (valobj,internal_dict):
+
+    # if valobj.GetType().IsReferenceType():
+        # val = valobj.Dereference()
+    # else:
+        # val = valobj
 
     matrix = Matrix("Matrix", valobj)
 
