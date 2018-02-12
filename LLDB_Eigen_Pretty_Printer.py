@@ -4,7 +4,6 @@ import os
 from functools import partial
 
 def __lldb_init_module (debugger, dict):
-    debugger.HandleCommand("type category enable Eigen")
     debugger.HandleCommand("type summary add -x \"^Eigen::Matrix<.*?>$\" -F\
                            LLDB_Eigen_Pretty_Printer.eigen_matrix_print -p -r\
                           -w Eigen")
@@ -18,6 +17,7 @@ def __lldb_init_module (debugger, dict):
                            -F\
                            LLDB_Eigen_Pretty_Printer.eigen_sparsematrix_print\
                            -p -r -w Eigen")
+    debugger.HandleCommand("type category enable Eigen")
 
 def evaluate_expression(valobj, expr):
     return valobj.GetProcess().GetSelectedThread().GetSelectedFrame().EvaluateExpression(expr)
