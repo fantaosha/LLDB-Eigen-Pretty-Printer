@@ -93,7 +93,7 @@ class Matrix(Printer):
 
             self.options = 0
             if len(template_params) > 3:
-                self.options = int(template_params[3]);
+                self.options = int(template_params[3])
 
             self.rowMajor = (int(self.options) & 0x1)
             self.innerType = template_params[0]
