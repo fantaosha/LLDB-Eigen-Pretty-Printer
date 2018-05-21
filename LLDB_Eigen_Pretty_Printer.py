@@ -31,7 +31,9 @@ class Printer:
 
     def evaluate_real(self, index):
         return "%1.8e" % float(evaluate_at_index(self.data, index).GetValue())
-                # float(self.data.GetValueForExpressionPath("["+str(index)+"]").GetValue())
+
+    def evaluate_bool(self, index):
+        return "%d" % evaluate_at_index(self.data, index).GetValueAsUnsigned()
 
     def evaluate_complex_double(self, index):
         val = \
@@ -61,6 +63,14 @@ class Printer:
                                                '+-'[val.imag < 0],\
                                                abs(val.imag))
 
+    def evaluate_complex_bool(self, index):
+        # val = self.data.GetValueForExpressionPath("["+str(index)+"]")
+        val = evaluate_at_index(self.data, index)
+        real = val.GetValueForExpressionPath("._M_real").GetValueAsUnsigned()
+        imag = val.GetValueForExpressionPath("._M_imag").GetValueAsUnsigned()
+
+        return '{0:d} + {1:d}i'.format(real, imag)
+
 class Matrix(Printer):
     def __init__(self, variety, val):
         try:
@@ -69,13 +79,25 @@ class Matrix(Printer):
 
             begin = "Eigen::"+variety+"<"
             complex_scalar = "std::complex<"
+            bool_key = "bool"
 
-            if (type_str.find(complex_scalar)>=0):
+            if (type_str.find(complex_scalar) >= 0):
                 regex = re.compile(begin + complex_scalar + ".*?>,.*?>")
                 is_complex = True
+
+                if (type_str.find(begin + complex_scalar + bool_key) >= 0):
+                    is_bool = True
+                else:
+                    is_bool = False
+
             else:
                 regex = re.compile(begin+".*?>")
                 is_complex = False
+
+                if (type_str.find(begin + bool_key) >= 0):
+                    is_bool = True
+                else:
+                    is_bool = False
 
             self.variety = regex.findall(type_str)[0]
             m = self.variety[len(begin):-1]
@@ -109,11 +131,17 @@ class Matrix(Printer):
                 if val.GetValueForExpressionPath("._M_value").IsValid():
                     self.get = partial(Printer.evaluate_complex_double, self)
                 elif val.GetValueForExpressionPath("._M_real").IsValid():
-                    self.get = partial(Printer.evaluate_complex_int, self)
+                    if is_bool:
+                        self.get = partial(Printer.evaluate_complex_bool, self)
+                    else:
+                        self.get = partial(Printer.evaluate_complex_int, self)
                 else:
                     self.variety = -1
             else:
-                self.get = partial(Printer.evaluate_real, self)
+                if is_bool:
+                    self.get = partial(Printer.evaluate_bool, self)
+                else:
+                    self.get = partial(Printer.evaluate_real, self)
 
         except:
             self.variety = -1
@@ -165,13 +193,24 @@ class SparseMatrix(Printer):
 
             begin = "Eigen::SparseMatrix<"
             complex_scalar = "std::complex<"
+            bool_key = "bool"
 
             if (type_str.find(complex_scalar)>=0):
                 regex = re.compile(begin + complex_scalar + ".*?>,.*?>")
                 is_complex = True
+
+                if (type_str.find(begin + complex_scalar + bool_key) >= 0):
+                    is_bool = True
+                else:
+                    is_bool = False
             else:
                 regex = re.compile(begin+".*?>")
                 is_complex = False
+
+                if (type_str.find(begin + bool_key) >= 0):
+                    is_bool = True
+                else:
+                    is_bool = False
 
             self.variety = regex.findall(type_str)[0]
 
@@ -212,11 +251,17 @@ class SparseMatrix(Printer):
                 if val.GetValueForExpressionPath("._M_value").IsValid():
                     self.get = partial(Printer.evaluate_complex_double, self)
                 elif val.GetValueForExpressionPath("._M_real").IsValid():
-                    self.get = partial(Printer.evaluate_complex_int, self)
+                    if is_bool:
+                        self.get = partial(Printer.evaluate_complex_bool, self)
+                    else:
+                        self.get = partial(Printer.evaluate_complex_int, self)
                 else:
                     self.variety = -1
             else:
-                self.get = partial(Printer.evaluate_real, self)
+                if is_bool:
+                    self.get = partial(Printer.evaluate_bool, self)
+                else:
+                    self.get = partial(Printer.evaluate_real, self)
         except:
             self.variety = -1
 
