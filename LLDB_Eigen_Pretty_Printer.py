@@ -238,7 +238,21 @@ class SparseMatrix(Printer):
                 val.GetValueForExpressionPath(".m_outerSize").GetValueAsSigned()
 
             self.outerStarts = val.GetValueForExpressionPath(".m_outerIndex")
-            self.innerNNZs = val.GetValueForExpressionPath(".m_innerNonZeros")
+
+            self.innerNNZs = []
+            innerNNZs = val.GetValueForExpressionPath(".m_innerNonZeros")
+
+            if (innerNNZs.GetValueAsSigned()):
+                for k in range(0, self.rows if self.rowMajor else self.cols):
+                    self.innerNNZs.append(evaluate_at_index(innerNNZs,
+                                                            k).GetValueAsSigned())
+            else:
+                for k in range(0, self.rows if self.rowMajor else self.cols):
+                    self.innerNNZs.append(evaluate_at_index(self.outerStarts,
+                                                            k+1).GetValueAsSigned()
+                                         - evaluate_at_index(self.outerStarts,
+                                                            k).GetValueAsSigned())
+
             self.size = \
             val.GetValueForExpressionPath(".m_data.m_size").GetValueAsSigned()
             self.indices = val.GetValueForExpressionPath(".m_data.m_indices")
@@ -277,8 +291,7 @@ class SparseMatrix(Printer):
             for i in range(0, self.rows):
                 index = evaluate_at_index(self.outerStarts, \
                                           i).GetValueAsSigned()
-                size = evaluate_at_index(self.innerNNZs, \
-                                         i).GetValueAsSigned()
+                size = self.innerNNZs[i]
 
                 for count in range(0, size):
                     j = evaluate_at_index(self.indices, \
@@ -292,8 +305,7 @@ class SparseMatrix(Printer):
             for j in range(0, self.cols):
                 index = evaluate_at_index(self.outerStarts, \
                                           j).GetValueAsSigned()
-                size = evaluate_at_index(self.innerNNZs, \
-                                         j).GetValueAsSigned()
+                size = self.innerNNZs[j]
 
                 for count in range(0, size):
                     i = evaluate_at_index(self.indices, \
