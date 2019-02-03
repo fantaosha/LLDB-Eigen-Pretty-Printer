@@ -64,7 +64,7 @@ Corresponding output in LLDB
 Corresponding out in LLDB
 ```lldb
 (lldb) p sparseA
-(Eigen::SparseMatrix<double, 0, int>) $0 = rows: 10, cols: 10
+(Eigen::SparseMatrix<double, 0, int>) $0 = rows: 10, cols: 10, nonzeros: 6
 { [1, 2] =  5.00000000e+00, [3, 1] =  2.00000000e+00, [3, 2] =  4.00000000e+00, [6, 9] = -4.50000000e+00, [7, 6] = -1.50000000e+00, [7, 8] =  3.50000000e+00 }
 ```
 #### Complex Matrix
@@ -77,7 +77,7 @@ Corresponding out in LLDB
 ```
 ```lldb
 (lldb) p sparseB
-(Eigen::SparseMatrix<std::complex<int>, 0, int>) $1 = rows: 5, cols: 3
+(Eigen::SparseMatrix<std::complex<int>, 0, int>) $1 = rows: 5, cols: 3, nonzeros: 4
 { [1, 2] = 1.00000e+00 - 1.00000e+00i, [2, 1] = 3.00000e+00 - 2.00000e+00i, [4, 0] = 0.00000e+00 - 5.00000e+00i, [4, 2] = 2.00000e+00 - 1.00000e+00i }
 ```
 ### Quaternion

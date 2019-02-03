@@ -253,6 +253,7 @@ class SparseMatrix(Printer):
                                          - evaluate_at_index(self.outerStarts,
                                                             k).GetValueAsSigned())
 
+            self.nonzeros = sum(self.innerNNZs)
             self.size = \
             val.GetValueForExpressionPath(".m_data.m_size").GetValueAsSigned()
             self.indices = val.GetValueForExpressionPath(".m_data.m_indices")
@@ -285,7 +286,9 @@ class SparseMatrix(Printer):
         for i in range(0, self.size):
             padding = max(padding, len(str(self.get(i))))
 
-        output = "rows: %d, cols: %d\n{ " % (self.rows, self.cols)
+        output = "rows: %d, cols: %d, nonzeros: %d\n{ " % (self.rows,
+                                                           self.cols,
+                                                           self.nonzeros)
 
         if (self.rowMajor):
             for i in range(0, self.rows):
@@ -322,7 +325,7 @@ class SparseMatrix(Printer):
                 output += "[%d, %d] =" % (rows[index], cols[index])
                 output += vals[index].rjust(padding+1, ' ') + ", "
 
-        output += "\b\b }\n"
+        output += "\b\b }\n" if self.nonzeros else " }\n"
 
         return output
 
